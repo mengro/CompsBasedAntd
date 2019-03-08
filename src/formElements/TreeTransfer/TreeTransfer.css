@@ -1,0 +1,34 @@
+.container {
+  font-size: 0;
+}
+.buttonGroup {
+  width: 14%;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+}
+.button {
+  width: 51%;
+}
+.title {
+  height: 40px;
+  line-height: 40px;
+  text-indent: 25px;
+  font-size: 14px;
+  border-bottom: 1px solid #d9d9d9;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.02);
+}
+.treeContainer {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  width: 43%;
+  height: 100%;
+  font-size: 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+}
+.treeItem {
+  overflow-y: scroll;
+}
