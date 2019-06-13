@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Tree, Button } from 'antd'
 import { PropTypes } from 'prop-types'
-import { arrayTools } from '@/utils/utils'
+import { arrayTools } from '@/utils'
 import * as classNames from './TreeTransfer.css'
 import { commonProps } from './settings'
 

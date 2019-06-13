@@ -30,5 +30,5 @@
   border-radius: 4px;
 }
 .treeItem {
-  overflow-y: scroll;
+  overflow-y: auto;
 }

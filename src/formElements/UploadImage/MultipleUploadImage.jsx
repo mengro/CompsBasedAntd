@@ -1,24 +1,48 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Upload, Icon, message } from 'antd'
-import * as classNames from './UploadImage.less'
+import { arrayTools } from '@lib/goods-admin-utils'
 
-class UploadImage extends Component {
+class MultipleUploadImage extends Component {
+  constructor() {
+    super()
+    this.state = {
+      fileList: [],
+    }
+  }
   static propTypes = {
     value: PropTypes.any,
+    limit: PropTypes.number,
     limitWidthAndHeight: PropTypes.any,
     onChange: PropTypes.func,
     antdOptions: PropTypes.object,
     allowTypeList: PropTypes.array,
   }
-  uploadFn = async ({ onSuccess, onError, file }) => {
+  componentWillUpdate(nextProps) {
+    const { value } = this.props
+    const nextValue = nextProps.value
+    if (!(nextValue instanceof Array)) {
+      return
+    }
+    if (!arrayTools.looseEqual(nextValue, value)) {
+      this.setState({
+        fileList: nextValue.map(item => ({
+          uid: new Date().valueOf(),
+          url: item,
+        }))
+      })
+    }
+  }
+  uploadHandle = async ({ onSuccess, onError, file }) => {
     const data = new FormData()
     data.append('file', file)
     const { uploadAPI } = this.props
     uploadAPI && uploadAPI(data)
       .then(resData => {
-        this.props.onChange(resData.url)
-        onSuccess()
+        if (resData.url) {
+          file.url = resData.url
+          onSuccess(file)
+        }
       })
       .catch(err => {
         onError()
@@ -62,24 +86,35 @@ class UploadImage extends Component {
     }
     return true
   }
+  handleChange = ({ file, fileList}) => {
+    const { onChange, limit } = this.props
+    fileList = fileList.slice(- limit)
+    fileList = fileList.filter(file => {
+      if (file.response) {
+        file.url = file.response.url
+      }
+      return file
+    })
+    this.setState({ fileList })
+    onChange && onChange(fileList.filter(item => item.url).map(i => i.url))
+  }
+
   render() {
-    const { value, antdOptions } = this.props
+    const { fileList } = this.state
+    const { antdOptions, limit = 1 } = this.props
     return (
       <Upload
         listType="picture-card"
-        customRequest={this.uploadFn}
+        customRequest={this.uploadHandle}
         beforeUpload={this.beforeUpload}
-        showUploadList={false}
+        showUploadList={true}
+        fileList={fileList}
+        onChange={this.handleChange}
+        multiple
         {...antdOptions}
       >
         {
-          value &&
-          <div className={classNames.imageContainer}>
-            <img src={value}/>
-          </div>
-        }
-        {
-          !value &&
+          fileList.length < limit &&
           <div>
             <Icon type="plus" />
             <div className="ant-upload-text">Upload</div>
@@ -91,5 +126,5 @@ class UploadImage extends Component {
 }
 
 export {
-  UploadImage
+  MultipleUploadImage
 }
